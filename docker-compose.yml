@@ -1,0 +1,38 @@
+version: '3'
+services:
+  frontend:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+      - ./data:/app/data  # Mount the data directory into the container
+    networks:
+      - app-network
+
+  db:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.db
+    volumes:
+      - db-data:/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:  # Create a named volume for SQLite data
